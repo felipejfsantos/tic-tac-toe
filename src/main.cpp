@@ -51,13 +51,11 @@ void setup() {
   pinMode(x, INPUT);
   pinMode(y, INPUT);
   pinMode(buttom, INPUT_PULLDOWN);
-
-  matriz[posy][posx] = 1;
 }
 
 int matriz[3][3] = {
   {0, 0, 0},
-  {0, 0, 0}, 
+  {0, 1, 0}, 
   {0, 0, 0}
 };
 
@@ -65,8 +63,6 @@ int readx;
 int ready;
 int posx = 1;
 int posy = 1;
-int new_posx;
-int new_posy;
 
 void loop() {
 
@@ -81,10 +77,10 @@ void loop() {
   }
 
     if(analogRead(y) > 4000){
-    ready = 1;
+    ready = -1;
   }
   else if(analogRead(y) < 1000){
-    ready = -1;
+    ready = 1;
   }
   else{
     ready = 0;
@@ -95,27 +91,35 @@ void loop() {
   Serial.print("Y: ");
   Serial.println(ready);
 
-  delay(100);
 
- 
-  new_posx = posx + readx;
-  new_posy = posy + ready;
-  if(new_posx < 0){
-    new_posx = 0;
-  }
-  else if(new_posx > 2){
-    new_posx = 2;
-  }
-
-   if(new_posy < 0){
-    new_posy = 0;
-  }
-  else if(new_posy > 2){
-    new_posy = 2;
-  }
-  matriz[new_posy][new_posx] = 1;
+if (readx != 0 || ready != 0){
   matriz[posy][posx] = 0;
-  posx = new_posx;
-  posy = new_posy;
+  posx += readx;
+  posy += ready;
+  if(posx < 0){
+    posx = 0;
+  }
+  else if(posx > 2){
+    posx = 2;
+  }
+
+   if(posy < 0){
+    posy = 0;
+  }
+  else if(posy > 2){
+    posy = 2;
+  }
+
+  matriz[posy][posx] = 1;
+}
+  for(int i = 0; i < 3; i++){
+    for(int j = 0; j < 3; j++){
+      if(matriz[i][j] == 1){
+        digitalWrite(blue[i][j], HIGH);
+      }else{
+        digitalWrite(blue[i][j], LOW);
+      }
+    }
+  }
  delay(100);
 }
