@@ -47,6 +47,12 @@ int pinMtxF[3][3] = { // Armazena as jogadas confirmadas (0: vazio, 1: Jogador 1
   {0, 0, 0}
 };
 
+int mtxEmpate[3][3] = {
+  {1, 0, 1},
+  {0, 1, 0},
+  {1, 0, 1}
+};
+
 int cursorX = 1; // Posição X do cursor (coluna de 0 a 2)
 int cursorY = 1; // Posição Y do cursor (linha de 0 a 2)
 
@@ -243,7 +249,10 @@ void verificarEstadoJogo() {
     if(emptyBlocks == 0) { // Deu Velha! Pisca tudo junto (Verde + Azul)
       gameOver = true;
       for(int k=0; k<5; k++) {
-        for(int i=0; i<3; i++) for(int j=0; j<3; j++) { digitalWrite(greenLEDs[i][j], HIGH); digitalWrite(blueLEDs[i][j], HIGH); }
+        for(int i=0; i<3; i++) for(int j=0; j<3; j++) { if(mtxEmpate[i][j] == 1){
+          digitalWrite(greenLEDs[i][j], HIGH); digitalWrite(blueLEDs[i][j], HIGH); 
+        }else{digitalWrite(greenLEDs[i][j], LOW); digitalWrite(blueLEDs[i][j], LOW);}
+        }
         delay(300);
         for(int i=0; i<3; i++) for(int j=0; j<3; j++) { digitalWrite(greenLEDs[i][j], LOW); digitalWrite(blueLEDs[i][j], LOW); }
         delay(300);
