@@ -1,6 +1,6 @@
 #include <Arduino.h>
 
-// Definição dos Pinos dos LEDs Verdes (Jogador 1)
+// Verdes
 #define l001 15
 #define l011 4
 #define l021 17
@@ -11,7 +11,7 @@
 #define l211 27
 #define l221 12 
 
-// Definição dos Pinos dos LEDs Azuis (Jogador 2)
+// Azuis
 #define l002 2
 #define l012 16
 #define l022 5
@@ -22,7 +22,6 @@
 #define l212 14
 #define l222 13 
 
-// Pinos do Joystick e Botão
 #define PIN_Y 34
 #define PIN_X 35
 #define PIN_BUTTON 23
@@ -75,25 +74,23 @@ void setup() {
     }
   }
 
-  // Configura os inputs do controle
   pinMode(PIN_X, INPUT);
   pinMode(PIN_Y, INPUT);
-  pinMode(PIN_BUTTON, INPUT_PULLDOWN); // Garante nível 0 quando solto
+  pinMode(PIN_BUTTON, INPUT_PULLDOWN); 
   
   reiniciarJogo();
 }
 
 void loop() {
-  // Se o jogo acabou, espera um clique no botão para reiniciar
+
   if (gameOver) {
     if (digitalRead(PIN_BUTTON) == HIGH) {
-      delay(200); // Debounce rápido
+      delay(200); 
       reiniciarJogo();
     }
     return; 
   }
 
-  // 1. LEITURA DO JOYSTICK
   int readX = 0;
   int readY = 0;
 
@@ -103,40 +100,36 @@ void loop() {
   if(analogRead(PIN_Y) > 4000)      readY = -1; // Cima
   else if(analogRead(PIN_Y) < 1000) readY = 1;  // Baixo
 
-  // Movimentação com trava (só move 1 bloco por vez, precisa voltar o joystick ao centro)
+  // Só movimenta se o joystick estiver no meio.
   if (readX == 0 && readY == 0) {
-    joyDedicado = false; // Joystick voltou ao centro, liberado para mover novamente
+    joyDedicado = false; 
   } 
   else if (!joyDedicado) {
     cursorX += readX;
     cursorY += readY;
 
-    // Limites do tabuleiro (0 a 2)
     if(cursorX < 0) cursorX = 0;
     if(cursorX > 2) cursorX = 2;
     if(cursorY < 0) cursorY = 0;
     if(cursorY > 2) cursorY = 2;
 
-    joyDedicado = true; // Trava o movimento
+    joyDedicado = true; 
   }
 
-  // 2. LEITURA DO BOTÃO DE CONFIRMAÇÃO
   if (digitalRead(PIN_BUTTON) == HIGH && !botaoPressionado) {
     botaoPressionado = true;
 
-    // Verifica se a casa atual está livre
     if (pinMtxF[cursorY][cursorX] == 0) {
-      // Salva a jogada baseando-se no turno atual
       if (rodada % 2 != 0) {
-        pinMtxF[cursorY][cursorX] = 1; // Jogador 1 (Verde)
+        pinMtxF[cursorY][cursorX] = 1; 
       } else {
-        pinMtxF[cursorY][cursorX] = 2; // Jogador 2 (Azul)
+        pinMtxF[cursorY][cursorX] = 2; 
       }
       
-      verificarEstadoJogo(); // Processa vitórias ou empate
+      verificarEstadoJogo(); // Vitórias ou empate
       
       if (!gameOver) {
-        rodada++; // Passa o turno
+        rodada++; 
       }
     } 
     else {
@@ -158,14 +151,13 @@ void loop() {
     atualizarPainelLEDs();
   }
   
-  delay(10); // Estabilidade do loop
+  delay(10); 
 }
 
-// Atualiza a matriz física de LEDs baseada no estado interno do jogo
+// Atualiza a matriz física de LEDs 
 void atualizarPainelLEDs() {
   for (int i = 0; i < 3; i++) {
     for (int j = 0; j < 3; j++) {
-      // 1. Acende as peças fixas já jogadas
       if (pinMtxF[i][j] == 1) {
         digitalWrite(greenLEDs[i][j], HIGH);
         digitalWrite(blueLEDs[i][j], LOW);
@@ -179,9 +171,9 @@ void atualizarPainelLEDs() {
         digitalWrite(blueLEDs[i][j], LOW);
       }
 
-      // 2. Sobreponha o cursor piscando do jogador atual
+
       if (i == cursorY && j == cursorX) {
-        // Efeito de piscar controlado pelo tempo interno do processador (millis)
+        // Piscar o LED selecionado
         if ((millis() % 400) < 200) { 
           if (rodada % 2 != 0) {
             digitalWrite(greenLEDs[i][j], HIGH); // Cursor do Jogador 1
@@ -194,12 +186,11 @@ void atualizarPainelLEDs() {
   }
 }
 
-// Toda a lógica de análise matemática transposta do seu arquivo C
 void verificarEstadoJogo() {
   bool vit1 = false;
   bool vit2 = false;
 
-  // Análise matemática de vitória (linhas, colunas e diagonais)
+  // Condições de vitória
   if((pinMtxF[0][0] == 1 && pinMtxF[0][1] == 1 && pinMtxF[0][2] == 1) ||
      (pinMtxF[1][0] == 1 && pinMtxF[1][1] == 1 && pinMtxF[1][2] == 1) ||
      (pinMtxF[2][0] == 1 && pinMtxF[2][1] == 1 && pinMtxF[2][2] == 1) ||
@@ -221,7 +212,6 @@ void verificarEstadoJogo() {
       vit2 = true;
   }
 
-  // Se o Jogador 1 vencer: Pisca a matriz toda em VERDE
   if (vit1) {
     gameOver = true;
     for(int k=0; k<5; k++) {
@@ -231,7 +221,6 @@ void verificarEstadoJogo() {
       delay(300);
     }
   } 
-  // Se o Jogador 2 vencer: Pisca a matriz toda em AZUL
   else if (vit2) {
     gameOver = true;
     for(int k=0; k<5; k++) {
@@ -241,12 +230,12 @@ void verificarEstadoJogo() {
       delay(300);
     }
   } 
-  // Verificação de Velha (tabuleiro cheio)
+  // Velha
   else {
     int emptyBlocks = 0;
     for(int i = 0; i < 3; i++) for(int j = 0; j < 3; j++) if(pinMtxF[i][j] == 0) emptyBlocks++;
     
-    if(emptyBlocks == 0) { // Deu Velha! Pisca tudo junto (Verde + Azul)
+    if(emptyBlocks == 0) { 
       gameOver = true;
       for(int k=0; k<5; k++) {
         for(int i=0; i<3; i++) for(int j=0; j<3; j++) { if(mtxEmpate[i][j] == 1){
