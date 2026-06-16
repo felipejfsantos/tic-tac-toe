@@ -39,7 +39,7 @@ const int blueLEDs[3][3] = {
   {l202, l212, l222}
 };
 
-// --- VARIÁVEIS DO JOGO DA VELHA ---
+
 int pinMtxF[3][3] = { // Armazena as jogadas confirmadas (0: vazio, 1: Jogador 1, 2: Jogador 2)
   {0, 0, 0},
   {0, 0, 0}, 
@@ -52,21 +52,19 @@ int mtxEmpate[3][3] = {
   {1, 0, 1}
 };
 
-int cursorX = 1; // Posição X do cursor (coluna de 0 a 2)
-int cursorY = 1; // Posição Y do cursor (linha de 0 a 2)
+int cursorX = 1; // Posição X do cursor 
+int cursorY = 1; // Posição Y do cursor 
 
 int rodada = 1;        // Controle de turnos
 bool gameOver = false; 
 bool joyDedicado = false; // Trava para exigir que o jogador solte o joystick antes de mover de novo
 bool botaoPressionado = false; // Trava para clique único do botão
 
-// Funções auxiliares
 void atualizarPainelLEDs();
 void verificarEstadoJogo();
 void reiniciarJogo();
 
 void setup() {
-  // Configura os pinos dos LEDs como saída
   for(int i = 0; i < 3; i++){
     for(int j = 0; j < 3; j++){
         pinMode(greenLEDs[i][j], OUTPUT);
