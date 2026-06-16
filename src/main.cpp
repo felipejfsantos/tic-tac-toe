@@ -40,7 +40,7 @@ const int blueLEDs[3][3] = {
 };
 
 
-int pinMtxF[3][3] = { // Armazena as jogadas confirmadas (0: vazio, 1: Jogador 1, 2: Jogador 2)
+int pinMtxF[3][3] = { // Jogadas confirmadas (0: vazio, 1: Verde 2: Azul)
   {0, 0, 0},
   {0, 0, 0}, 
   {0, 0, 0}
@@ -57,8 +57,8 @@ int cursorY = 1; // Posição Y do cursor
 
 int rodada = 1;        // Controle de turnos
 bool gameOver = false; 
-bool joyDedicado = false; // Trava para exigir que o jogador solte o joystick antes de mover de novo
-bool botaoPressionado = false; // Trava para clique único do botão
+bool joyDedicado = false; 
+bool botaoPressionado = false; // Clique único do botão
 
 void atualizarPainelLEDs();
 void verificarEstadoJogo();
@@ -98,7 +98,6 @@ void loop() {
   if(analogRead(PIN_Y) > 4000)      readY = -1; // Cima
   else if(analogRead(PIN_Y) < 1000) readY = 1;  // Baixo
 
-  // Só movimenta se o joystick estiver no meio.
   if (readX == 0 && readY == 0) {
     joyDedicado = false; 
   } 
@@ -131,7 +130,7 @@ void loop() {
       }
     } 
     else {
-      // Efeito visual de erro: Pisca os leds se tentar jogar em local ocupado
+      // Pisca os leds se tentar jogar em local ocupado
       for(int k=0; k<3; k++) {
         atualizarPainelLEDs(); delay(70);
         for(int i=0; i<3; i++) for(int j=0; j<3; j++) { digitalWrite(greenLEDs[i][j], LOW); digitalWrite(blueLEDs[i][j], LOW); }
@@ -141,10 +140,9 @@ void loop() {
   }
 
   if (digitalRead(PIN_BUTTON) == LOW) {
-    botaoPressionado = false; // Libera o botão para o próximo clique
+    botaoPressionado = false; 
   }
 
-  // 3. ATUALIZAÇÃO VISUAL DOS LEDS
   if (!gameOver) {
     atualizarPainelLEDs();
   }
