@@ -1,5 +1,8 @@
 #include <Arduino.h>
 
+//Link para a simulação online do protótipo
+//https://wokwi.com/projects/465634324069682177
+
 // Verdes
 #define l001 15
 #define l011 4
